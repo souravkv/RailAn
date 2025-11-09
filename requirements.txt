@@ -1,0 +1,33 @@
+# Django 5.x
+Django==5.0.4
+channels==4.0.0
+channels-redis==4.2.0
+
+# Celery for async tasks
+celery==5.3.4
+redis==5.0.1
+
+# Translation (Google Gemini API)
+google-generativeai>=0.3.0
+requests==2.31.0
+
+# Text-to-Speech
+# Note: Coqui TTS requires PyTorch which is large (~2GB)
+# If you don't want to install it, pyttsx3 will be used as fallback
+# TTS==0.22.0  # Coqui TTS (uncomment if you want to use it)
+pyttsx3==2.90
+pydub==0.25.1  # For audio manipulation
+
+# Language detection
+langdetect==1.0.9
+
+# HTMX (via CDN, but keeping for reference)
+# django-htmx==1.18.0  # Optional Django HTMX integration
+
+# Database
+psycopg2-binary==2.9.9  # For PostgreSQL (optional)
+
+# Utilities
+python-decouple==3.8  # For environment variables
+Pillow==10.2.0  # For image handling if needed
+

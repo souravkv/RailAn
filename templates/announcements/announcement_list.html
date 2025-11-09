@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}All Announcements - RailAnnounce{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>All Announcements</h2>
+            <a href="{% url 'announcements:create_announcement' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
+        
+        <div class="row">
+            {% for announcement in announcements %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">#{{ announcement.id }}</h6>
+                            <span class="badge bg-{% if announcement.status == 'completed' %}success{% elif announcement.status == 'processing' %}warning{% elif announcement.status == 'failed' %}danger{% else %}secondary{% endif %} status-badge">
+                                {{ announcement.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ announcement.text|truncatewords:20 }}</p>
+                            <small class="text-muted">
+                                Language: 
+                                <span class="badge bg-info language-badge">{{ announcement.detected_language|upper }}</span>
+                                | Priority: {{ announcement.priority }}
+                                | Created: {{ announcement.created_at|date:"M d, Y H:i" }}
+                            </small>
+                            <div class="mt-2">
+                                <a href="{% url 'announcements:announcement_detail' announcement.id %}" class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No announcements found. 
+                        <a href="{% url 'announcements:create_announcement' %}">Create your first announcement</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
