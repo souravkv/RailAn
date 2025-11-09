@@ -25,7 +25,19 @@ class Translator:
         self.api_key = api_key or getattr(settings, 'GEMINI_API_KEY', None)
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
+            # Use gemini-2.5-flash (fast and efficient for translation)
+            # Fallback to gemini-flash-latest if not available
+            try:
+                self.model = genai.GenerativeModel('gemini-2.5-flash')
+            except Exception:
+                try:
+                    self.model = genai.GenerativeModel('gemini-flash-latest')
+                except Exception:
+                    try:
+                        self.model = genai.GenerativeModel('gemini-2.5-pro')
+                    except Exception:
+                        # Last fallback
+                        self.model = genai.GenerativeModel('gemini-pro-latest')
         else:
             self.model = None
             logger.warning("GEMINI_API_KEY not configured. Translation will use fallback.")
