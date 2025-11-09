@@ -48,11 +48,11 @@
    - Error fixes
    - Quick fixes
 
-7. **LIBRETRANSLATE_FIX.md**
-   - LibreTranslate issues
-   - Why it appears stuck
-   - How to fix
-   - Alternative solutions
+7. **GEMINI_SETUP.md** ⭐ **GEMINI API SETUP**
+   - Gemini API setup guide
+   - How to get API key
+   - Configuration instructions
+   - Troubleshooting
 
 8. **INSTALLATION_FIXES.md**
    - Installation issues
@@ -105,9 +105,9 @@
 
 ## 🛠 Scripts
 
-15. **start_libretranslate.sh**
-    - Start LibreTranslate in background
-    - Docker container management
+15. **GEMINI_SETUP.md**
+    - Gemini API setup instructions
+    - API key configuration
 
 16. **run_services.sh**
     - Start all services automatically
@@ -165,7 +165,7 @@
 
 ### Troubleshooting
 - TROUBLESHOOTING.md
-- LIBRETRANSLATE_FIX.md
+- GEMINI_SETUP.md
 - INSTALLATION_FIXES.md
 
 ### Documentation
@@ -174,7 +174,7 @@
 - STRUCTURE.md
 
 ### Scripts
-- start_libretranslate.sh
+- setup_gemini.sh
 - run_services.sh
 - setup.sh
 
@@ -186,7 +186,7 @@
 - **How to start?** → START_HERE_AFTER_RESTART.md
 - **What's the status?** → PROJECT_STATUS.md
 - **Something not working?** → TROUBLESHOOTING.md
-- **LibreTranslate issues?** → LIBRETRANSLATE_FIX.md
+- **Gemini API setup?** → GEMINI_SETUP.md
 - **Complete docs?** → README.md
 
 ---

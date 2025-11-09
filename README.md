@@ -1,73 +1,83 @@
-# RailAnnounce – FREE Offline Multilingual Railway Announcement System
+# RailAnnounce – AI-Powered Multilingual Railway Announcement System
 
-**100% FREE | NO API KEYS | NO PAYMENTS | FULLY OFFLINE-CAPABLE**
+**Cloud-Based Translation | Real-Time Updates | Scalable Architecture**
 
-> **📋 Current Status**: ✅ SYSTEM IS FUNCTIONAL - See `PROJECT_STATUS.md` for current state  
+> **📋 Current Status**: ✅ SYSTEM IS FULLY FUNCTIONAL - See `PROJECT_STATUS.md` for current state  
 > **🚀 Quick Start**: See `QUICK_RESTART.md` for quick restart instructions  
-> **🐛 Issues**: See `TROUBLESHOOTING.md` for troubleshooting guide
+> **🐛 Issues**: See `TROUBLESHOOTING.md` for troubleshooting guide  
+> **🔑 Setup**: See `GEMINI_SETUP.md` for Gemini API configuration
 
 ## 🎯 Goal
 
-Staff types announcement → auto-detect language → translate to Hindi, Tamil, Telugu, Bengali, Kannada → generate **offline voice** → show on **live display board** → push via **WebSocket**
+Staff types announcement → AI auto-detects language → Google Gemini API translates to Hindi, Tamil, Telugu, Bengali, Kannada → generates **audio files** → displays on **live display board** → pushes via **WebSocket** in real-time
 
-## 🛠 Tech Stack (ALL FREE)
+## 🛠 Tech Stack
 
-- **Django 5.x** - Web framework
-- **SQLite/PostgreSQL** - Database
-- **LibreTranslate** - Self-hosted translation server (FREE)
-- **Coqui TTS** - Offline TTS (best quality)
-- **pyttsx3** - Fallback offline TTS
-- **Django Channels** - WebSocket support
-- **Redis** - Message broker and cache
-- **Celery** - Async task processing
-- **HTMX + Bootstrap** - Frontend (no React needed)
+### Backend Framework
+- **Django 5.0.4** - High-performance Python web framework
+- **Django Channels 4.0** - WebSocket support for real-time communication
+- **ASGI** - Asynchronous Server Gateway Interface
+
+### Database & Caching
+- **SQLite/PostgreSQL** - Relational database (SQLite for dev, PostgreSQL for production)
+- **Redis 5.0** - In-memory data structure store (message broker & cache)
+
+### AI & Machine Learning Services
+- **Google Gemini 2.5 Flash API** - Advanced AI translation service
+- **langdetect 1.0.9** - Automatic language detection using statistical models
+- **google-generativeai** - Official Google AI SDK
+
+### Asynchronous Task Processing
+- **Celery 5.3.4** - Distributed task queue for async processing
+- **Redis** - Message broker for Celery workers
+
+### Text-to-Speech
+- **pyttsx3** - Cross-platform TTS engine
+- **pydub** - Audio manipulation library
+- **Coqui TTS** (optional) - High-quality neural TTS
+
+### Frontend Technologies
+- **Bootstrap 5** - Responsive CSS framework
+- **HTMX** - Dynamic HTML without JavaScript framework
+- **WebSocket** - Real-time bidirectional communication
+- **JavaScript** - Client-side interactivity
+
+### Additional Tools
+- **python-decouple** - Environment variable management
+- **Pillow** - Image processing
+- **requests** - HTTP library
 
 ## 📋 Prerequisites
 
 - Python 3.10+
 - Redis server
-- LibreTranslate server (instructions below)
+- Google Gemini API key (free tier available)
 
 ## 🚀 Setup Instructions
 
-### Step 1: Setup LibreTranslate Server (Separate Service)
+### Step 1: Get Google Gemini API Key
 
-**Important:** LibreTranslate runs as a **separate server**, NOT as a Python package in this project. You need to run it in a **separate terminal/process**.
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Create a new API key
+4. Copy the API key
 
-#### Option A: Using Docker (Recommended - Easiest)
+**Note:** Free tier is available with generous usage limits for development.
 
-```bash
-# Run LibreTranslate using Docker
-docker run -ti --rm -p 5000:5000 libretranslate/libretranslate
-
-# Or with specific languages pre-loaded
-docker run -ti --rm -p 5000:5000 libretranslate/libretranslate --load-only hi,ta,te,bn,kn,en
-```
-
-#### Option B: From Source (Advanced)
+### Step 2: Set Gemini API Key
 
 ```bash
-# Clone LibreTranslate
-git clone https://github.com/LibreTranslate/LibreTranslate.git
-cd LibreTranslate
+# Set as environment variable (recommended)
+export GEMINI_API_KEY="your-api-key-here"
 
-# Install dependencies (may require system libraries like ICU)
-pip install -r requirements.txt
-
-# Download models for Indian languages (one-time, may take time)
-python -m libretranslate --update-models
-
-# Start server (runs on http://127.0.0.1:5000)
-python main.py --host 127.0.0.1 --port 5000
+# Or add to ~/.bashrc for permanent setup
+echo 'export GEMINI_API_KEY="your-api-key-here"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
-**Note:** 
-- The first time you run this, it will download language models which may take some time
-- Make sure you have internet connection for the initial setup
-- If installing from source fails due to missing system libraries (like ICU), use Docker instead
-- Our Django app connects to LibreTranslate via HTTP (using `requests` library), so it doesn't need the `libretranslate` Python package
+See `GEMINI_SETUP.md` for detailed setup instructions.
 
-### Step 2: Install Redis
+### Step 3: Install Redis
 
 ```bash
 # Ubuntu/Debian
@@ -78,7 +88,7 @@ sudo systemctl start redis-server
 # Or run: redis-server
 ```
 
-### Step 3: Setup Django Project
+### Step 4: Setup Django Project
 
 ```bash
 # Navigate to project directory
@@ -98,21 +108,21 @@ python3 manage.py migrate
 python3 manage.py createsuperuser
 ```
 
-### Step 4: Start Celery Worker (in a separate terminal)
+### Step 5: Start Celery Worker (in a separate terminal)
 
 ```bash
 cd /home/zourv/Documents/PROJEX/Django_project
 celery -A railannounce worker --loglevel=info
 ```
 
-### Step 5: Start Django Development Server
+### Step 6: Start Django Development Server
 
 ```bash
 cd /home/zourv/Documents/PROJEX/Django_project
 python3 manage.py runserver
 ```
 
-### Step 6: Access the Application
+### Step 7: Access the Application
 
 - **Home**: http://127.0.0.1:8000/
 - **Create Announcement**: http://127.0.0.1:8000/create/
@@ -130,9 +140,9 @@ Django_project/
 │   ├── tasks.py           # Celery tasks
 │   ├── consumers.py       # WebSocket consumers
 │   ├── services/          # Business logic services
-│   │   ├── language_detector.py
-│   │   ├── translator.py
-│   │   └── tts_service.py
+│   │   ├── language_detector.py  # AI language detection
+│   │   ├── translator.py        # Gemini API integration
+│   │   └── tts_service.py        # Text-to-Speech service
 │   └── admin.py           # Admin interface
 ├── railannounce/          # Project settings
 │   ├── settings.py        # Django settings
@@ -149,10 +159,10 @@ Django_project/
 
 ### Environment Variables
 
-You can set these environment variables (optional):
+You can set these environment variables:
 
 ```bash
-export LIBRETRANSLATE_URL=http://127.0.0.1:5000
+export GEMINI_API_KEY="your-api-key-here"  # Required for translations
 export DJANGO_SETTINGS_MODULE=railannounce.settings
 ```
 
@@ -160,10 +170,10 @@ export DJANGO_SETTINGS_MODULE=railannounce.settings
 
 Key settings in `railannounce/settings.py`:
 
-- `LIBRETRANSLATE_URL`: LibreTranslate server URL (default: http://127.0.0.1:5000)
+- `GEMINI_API_KEY`: Google Gemini API key (required for translations)
 - `CELERY_BROKER_URL`: Redis URL for Celery (default: redis://127.0.0.1:6379/0)
 - `CHANNEL_LAYERS`: Redis configuration for WebSocket
-- `SUPPORTED_LANGUAGES`: Supported language codes
+- `SUPPORTED_LANGUAGES`: Supported language codes (hi, ta, te, bn, kn, en)
 
 ## 🎮 Usage
 
@@ -175,9 +185,9 @@ Key settings in `railannounce/settings.py`:
 4. Click "Create and Process Announcement"
 
 The system will:
-- Auto-detect the language
-- Translate to Hindi, Tamil, Telugu, Bengali, Kannada
-- Generate audio files for each language
+- Auto-detect the language using AI (langdetect)
+- Translate to Hindi, Tamil, Telugu, Bengali, Kannada using Google Gemini API
+- Generate audio files for each language (async processing)
 - Update display boards in real-time via WebSocket
 
 ### Display Board
@@ -206,23 +216,25 @@ Access admin at http://127.0.0.1:8000/admin/ to:
 
 ## 🔍 Features
 
-- ✅ Auto language detection
-- ✅ Multilingual translation (5+ languages)
-- ✅ Offline TTS (Coqui TTS + pyttsx3 fallback)
-- ✅ Real-time WebSocket updates
-- ✅ Async processing with Celery
-- ✅ Display board with live updates
-- ✅ Audio playback for all languages
-- ✅ Priority-based announcement ordering
-- ✅ 100% free and open-source
+- ✅ **AI-Powered Language Detection** - Automatic language identification
+- ✅ **Google Gemini API Integration** - Advanced AI translation service
+- ✅ **Multilingual Support** - 5+ Indian languages (Hindi, Tamil, Telugu, Bengali, Kannada)
+- ✅ **Asynchronous Processing** - Celery workers for non-blocking operations
+- ✅ **Real-Time WebSocket Updates** - Live display board synchronization
+- ✅ **Text-to-Speech Generation** - Audio files for all languages
+- ✅ **Scalable Architecture** - Redis-based message queue
+- ✅ **Priority-Based Ordering** - Intelligent announcement prioritization
+- ✅ **RESTful API** - JSON endpoints for integration
+- ✅ **Admin Interface** - Django admin for management
 
 ## 🐛 Troubleshooting
 
-### LibreTranslate not working
+### Gemini API not working
 
-- Make sure LibreTranslate server is running on http://127.0.0.1:5000
-- Check if models are downloaded: `python -m libretranslate --update-models`
-- Check LibreTranslate logs for errors
+- Make sure `GEMINI_API_KEY` is set: `echo $GEMINI_API_KEY`
+- Verify API key is valid at [Google AI Studio](https://makersuite.google.com/app/apikey)
+- Check API quota limits in Google Cloud Console
+- See `GEMINI_SETUP.md` for detailed setup instructions
 
 ### Redis connection error
 
@@ -250,10 +262,11 @@ Access admin at http://127.0.0.1:8000/admin/ to:
 
 ## 📝 Notes
 
-- **First run**: TTS models will be downloaded automatically (may take time)
-- **Offline mode**: Once models are downloaded, everything works offline
+- **API Key Required**: Gemini API key is required for translations (free tier available)
+- **Internet Required**: Gemini API requires internet connection
 - **Performance**: Translation and TTS generation are async (non-blocking)
-- **Scaling**: Can be deployed with multiple Celery workers
+- **Scaling**: Can be deployed with multiple Celery workers for high throughput
+- **Fallback Mode**: System works without API key but uses original text (no translation)
 
 ## 📄 License
 
@@ -269,10 +282,11 @@ Feel free to contribute by:
 
 ## 🙏 Credits
 
-- **LibreTranslate** - Free translation service
-- **Coqui TTS** - High-quality TTS
+- **Google Gemini API** - Advanced AI translation service
+- **Django** - High-performance web framework
 - **Django Channels** - WebSocket support
-- **Celery** - Async task processing
+- **Celery** - Distributed task queue
+- **Redis** - In-memory data store
 
 ---
 

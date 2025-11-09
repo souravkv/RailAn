@@ -1,0 +1,145 @@
+# RailAnnounce System Architecture Flow Diagram
+
+## Complete System Flow Description for AI Diagram Generator
+
+Create a comprehensive, advanced-looking system architecture flow diagram showing the following:
+
+### MAIN FLOW (Left to Right, Top to Bottom):
+
+**1. USER INPUT LAYER (Top Left)**
+- User/Staff enters announcement text via Web Browser
+- Input goes to Django Web Server (Port 8000)
+- Django View receives POST request
+
+**2. REQUEST PROCESSING LAYER**
+- Django View validates input
+- Creates Announcement object in SQLite/PostgreSQL Database
+- Sets status to "pending"
+- Triggers async task via Celery
+
+**3. ASYNC TASK QUEUE (Redis Message Broker)**
+- Redis (Port 6379) receives task from Django
+- Celery Worker picks up task from Redis queue
+- Task: process_announcement(announcement_id)
+
+**4. LANGUAGE DETECTION SERVICE**
+- Celery Worker calls LanguageDetector service
+- Uses langdetect library (statistical ML model)
+- Detects language code (en, hi, ta, te, bn, kn)
+- Updates Announcement.detected_language in Database
+
+**5. TRANSLATION SERVICE (Parallel Processing)**
+- Celery Worker calls Translator service
+- Translator connects to Google Gemini 2.5 Flash API (Cloud)
+- API Key authentication via environment variable
+- For each target language (hi, ta, te, bn, kn):
+  - Sends translation request to Gemini API
+  - Receives translated text
+  - Stores Translation object in Database
+  - Updates translation_service field to "gemini"
+
+**6. TEXT-TO-SPEECH GENERATION (Parallel Processing)**
+- For each language (original + translations):
+  - Celery Worker calls TTSService
+  - Generates audio file using pyttsx3 or Coqui TTS
+  - Saves audio file to media/audio/ directory
+  - Creates AudioFile object in Database
+  - Links AudioFile to Translation
+
+**7. DATABASE PERSISTENCE**
+- All data stored in SQLite/PostgreSQL:
+  - Announcement (id, text, detected_language, status, priority)
+  - Translation (announcement_id, language_code, translated_text, translation_service)
+  - AudioFile (announcement_id, language_code, audio_file, duration_seconds, tts_service)
+
+**8. WEBSOCKET NOTIFICATION**
+- After processing completes:
+  - Celery Worker calls notify_announcement_ready task
+  - Sends message to Redis Channel Layer
+  - Django Channels ASGI server receives message
+  - WebSocket Consumer broadcasts to all connected clients
+  - Display Board clients receive real-time update
+
+**9. DISPLAY BOARD (Real-Time Updates)**
+- Multiple Display Board clients connected via WebSocket
+- Receive announcement data (text, translations, audio URLs)
+- Update UI in real-time without page refresh
+- Show announcements sorted by priority and status
+- Language tabs for switching between translations
+- Audio players for each language
+
+### TECHNICAL COMPONENTS TO SHOW:
+
+**Backend Services:**
+- Django 5.0.4 Web Framework (HTTP/HTTPS)
+- Django Channels ASGI Server (WebSocket)
+- Celery 5.3.4 Workers (Async Task Processing)
+- Redis 5.0 (Message Broker & Cache)
+- SQLite/PostgreSQL Database
+
+**External Services:**
+- Google Gemini 2.5 Flash API (Cloud - HTTPS)
+- Environment Variables (GEMINI_API_KEY)
+
+**Frontend:**
+- Web Browser (HTMX, Bootstrap 5, JavaScript)
+- WebSocket Client Connection
+- Real-time UI Updates
+
+**Data Flow:**
+- HTTP Requests (Django)
+- WebSocket Connections (Channels)
+- Redis Pub/Sub (Message Queue)
+- Database Queries (ORM)
+- API Calls (HTTPS to Gemini)
+
+### ARCHITECTURE PATTERNS TO HIGHLIGHT:
+
+1. **Asynchronous Processing**: Django → Redis → Celery → Parallel Tasks
+2. **Microservices Architecture**: Separate services (Language Detection, Translation, TTS)
+3. **Event-Driven Architecture**: WebSocket notifications for real-time updates
+4. **Message Queue Pattern**: Redis as message broker
+5. **Cloud Integration**: External API calls to Google Gemini
+6. **Real-Time Communication**: WebSocket bidirectional communication
+7. **Database Persistence**: Relational database with foreign keys
+8. **Scalable Design**: Multiple Celery workers can process tasks in parallel
+
+### VISUAL ELEMENTS TO INCLUDE:
+
+- Different colors for different layers (Input, Processing, Storage, Output)
+- Arrows showing data flow direction
+- Icons for: Database, Cloud API, WebSocket, Message Queue, Web Server
+- Show parallel processing with multiple arrows
+- Highlight async operations with dashed lines
+- Show real-time updates with WebSocket connections
+- Display multiple clients connected to Display Board
+- Show environment variables and configuration
+
+### FLOW SEQUENCE NUMBERS:
+
+1. User Input → Django View
+2. Django → Database (Create Announcement)
+3. Django → Redis (Queue Task)
+4. Redis → Celery Worker
+5. Celery → LanguageDetector → Database
+6. Celery → Translator → Gemini API → Database (5 parallel translations)
+7. Celery → TTSService → Audio Files → Database (6 parallel audio generation)
+8. Celery → Redis Channel Layer
+9. Redis → Django Channels → WebSocket → Display Board Clients
+
+### ADVANCED FEATURES TO EMPHASIZE:
+
+- Parallel translation processing (5 languages simultaneously)
+- Parallel audio generation (6 audio files simultaneously)
+- Real-time WebSocket broadcasting
+- Async task queue with retry mechanism
+- Database transactions and data consistency
+- Error handling and fallback mechanisms
+- Scalable worker architecture
+- Cloud API integration with authentication
+- Environment-based configuration
+- RESTful API endpoints
+- Admin interface for management
+
+Make it look professional, complex, and advanced - suitable for a technical presentation showing enterprise-level architecture with modern technologies, microservices, real-time communication, and cloud integration.
+
