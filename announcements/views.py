@@ -37,7 +37,9 @@ def create_announcement(request):
             detected_language=language_detector.detect_language(text),
             priority=priority,
             created_by=request.user if request.user.is_authenticated else None,
-            status='pending'
+            status='pending',
+            email_sent=False,  # Set the default value for email_sent
+            is_urgent=False  # Set the default value for is_urgent
         )
         
         # Start async processing

@@ -26,9 +26,13 @@ class Announcement(models.Model):
     # Priority and display
     priority = models.IntegerField(default=5, help_text="Priority level (1-10, higher = more important)")
     is_active = models.BooleanField(default=True, help_text="Whether this announcement is currently active")
+    is_urgent = models.BooleanField(default=False, help_text="Whether this is an urgent announcement")
     
     # Error tracking
     error_message = models.TextField(blank=True, null=True, help_text="Error message if processing failed")
+    
+    # Email notification tracking
+    email_sent = models.BooleanField(default=False, help_text="Whether email notifications were sent")
     
     class Meta:
         ordering = ['-created_at']
