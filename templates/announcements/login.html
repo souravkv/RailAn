@@ -1,151 +1,96 @@
 {% extends 'base.html' %}
 
-{% block title %}Login - RailAnnounce{% endblock %}
+{% block title %}Sign In - RailAnnounce{% endblock %}
 
 {% block extra_css %}
 <style>
-    .login-container {
-        min-height: calc(100vh - 200px);
+    .login-hero {
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 0;
-    }
-    
-    .login-card {
-        max-width: 450px;
-        width: 100%;
-        background: var(--netflix-dark);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+        padding: 2rem;
+        background-image: url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGlvcGExNjFvZndwOGZodWFuOW45dXk3cmxnb2lvdHZsN2FtZTJ3bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3q3SUqPnxZGQpMNcjc/giphy.gif');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        position: relative;
         overflow: hidden;
     }
-    
-    .login-header {
-        background: var(--gradient-primary);
-        padding: 2rem;
-        text-align: center;
+    .login-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.65) 100%);
+        z-index: 0;
     }
-    
-    .login-header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 0;
-        color: #fff;
-    }
-    
-    .login-header p {
-        margin: 0.5rem 0 0 0;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9rem;
-    }
-    
-    .login-body {
+    .login-card {
+        position: relative;
+        z-index: 1;
+        max-width: 460px;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
         padding: 2.5rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(16px);
     }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .login-footer {
+    .login-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.5rem;
         text-align: center;
-        padding-top: 1rem;
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.9rem;
     }
-    
-    .info-box {
-        background: rgba(102, 126, 234, 0.1);
-        border-left: 4px solid rgba(102, 126, 234, 0.5);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
+    .login-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        margin-bottom: 2rem;
     }
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="login-container">
-    <div class="login-card fade-in">
-        <div class="login-header">
-            <h1><i class="bi bi-person-circle"></i> Welcome</h1>
-            <p>Sign in or create an account</p>
-        </div>
-        <div class="login-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="name" 
-                        name="name" 
-                        placeholder="Enter your full name"
-                        required
-                        autofocus
-                    >
-                </div>
-                
-                <div class="form-group">
-                    <label for="age" class="form-label">Age</label>
-                    <input 
-                        type="number" 
-                        class="form-control" 
-                        id="age" 
-                        name="age" 
-                        placeholder="Enter your age"
-                        min="1"
-                        max="150"
-                        required
-                    >
-                </div>
-                
-                <div class="form-group">
-                    <label for="username" class="form-label">Username</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="username" 
-                        name="username" 
-                        placeholder="Choose a username"
-                        required
-                    >
-                </div>
-                
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input 
-                        type="password" 
-                        class="form-control" 
-                        id="password" 
-                        name="password" 
-                        placeholder="Enter password (required for new users)"
-                    >
-                    <small class="form-text text-muted">
-                        If you're a new user, password is required. Existing users must enter their password.
-                    </small>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-box-arrow-in-right"></i> Sign In / Sign Up
-                    </button>
-                </div>
-            </form>
-            
-            <div class="info-box">
-                <i class="bi bi-info-circle"></i> 
-                <strong>Note:</strong> If you're a new user, you'll be automatically registered. 
-                If you're an existing user, enter your password to sign in.
+{% block hero_fullwidth %}
+<section class="login-hero">
+    <div class="login-card">
+        <h1 class="login-title">Welcome Aboard</h1>
+        <p class="login-subtitle">Sign in to save your preferences and manage announcements.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label" style="color: rgba(255, 255, 255, 0.8);">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name">
             </div>
-        </div>
+
+            <div class="mb-3">
+                <label for="age" class="form-label" style="color: rgba(255, 255, 255, 0.8);">Age</label>
+                <input type="number" class="form-control" id="age" name="age" placeholder="Your age (optional)" min="1" max="150">
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label" style="color: rgba(255, 255, 255, 0.8);">Username <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
+                <div class="form-text" style="color: rgba(255, 255, 255, 0.6);">
+                    Existing users: use the same username to continue.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label" style="color: rgba(255, 255, 255, 0.8);">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password (optional)">
+                <div class="form-text" style="color: rgba(255, 255, 255, 0.6);">
+                    Password is for your records only. Not required for now.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login w-100">
+                Sign In / Continue
+            </button>
+        </form>
+        <a class="back-link" href="{% url 'announcements:home' %}">← Back to Home</a>
     </div>
-</div>
+</section>
 {% endblock %}
+{% block content %}{% endblock %}
 

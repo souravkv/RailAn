@@ -12,11 +12,12 @@ from django.conf import settings
 from django.template.loader import render_to_string
 import json
 import logging
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
 from .models import Announcement, Translation, AudioFile, DisplayBoard
-from .tasks import process_announcement
+from .tasks import process_announcement, delete_announcement_after_delay
 from .services import LanguageDetector
 
 language_detector = LanguageDetector()
@@ -27,8 +28,62 @@ def home(request):
     return render(request, 'announcements/home.html')
 
 
+def login_view(request):
+    """General login / signup to establish session"""
+    if request.session.get('user_name'):
+        return redirect('announcements:home')
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        username = request.POST.get('username', '').strip()
+        age = request.POST.get('age')
+        password = request.POST.get('password', '').strip()
+
+        if not username:
+            messages.error(request, 'Please enter a username')
+        else:
+            request.session['user_name'] = name or username
+            request.session['username'] = username
+            request.session['age'] = age
+            request.session.set_expiry(60 * 60 * 6)  # 6 hours
+            return redirect('announcements:home')
+
+    return render(request, 'announcements/login.html')
+
+
+def logout_view(request):
+    """Clear admin session"""
+    cleared = False
+    for key in ['user_name', 'username', 'age', 'is_admin']:
+        if request.session.get(key):
+            request.session.pop(key, None)
+            cleared = True
+    if cleared:
+        messages.success(request, 'You have been logged out.')
+    else:
+        messages.info(request, 'You are not logged in.')
+    return redirect('announcements:home')
+
+
 def create_announcement(request):
     """Create a new announcement"""
+    if not request.session.get('is_admin'):
+        if request.method == 'POST' and request.POST.get('admin_passcode'):
+            passcode = request.POST.get('admin_passcode').strip()
+            if passcode == '7777':
+                request.session['is_admin'] = True
+                request.session.set_expiry(60 * 60 * 4)
+                messages.success(request, 'Admin privileges unlocked. You can now create announcements.')
+                return redirect('announcements:create_announcement')
+            else:
+                messages.error(request, 'Incorrect passcode. Please try again.')
+                return render(request, 'announcements/admin_unlock.html')
+        elif request.method == 'POST':
+            messages.warning(request, 'Please enter the admin passcode before creating announcements.')
+            return render(request, 'announcements/admin_unlock.html')
+        else:
+            return render(request, 'announcements/admin_unlock.html')
+
     if request.method == 'POST':
         title = request.POST.get('title', '').strip()
         description = request.POST.get('description', '').strip()
@@ -237,6 +292,18 @@ def api_announcement_status(request, announcement_id):
 
 def test_email(request):
     """Test email configuration"""
+    if not request.session.get('is_admin'):
+        if request.method == 'POST' and request.POST.get('admin_passcode'):
+            passcode = request.POST.get('admin_passcode').strip()
+            if passcode == '7777':
+                request.session['is_admin'] = True
+                request.session.set_expiry(60 * 60 * 4)
+                messages.success(request, 'Admin privileges unlocked. You can now send test emails.')
+                return redirect('announcements:create_announcement')
+            else:
+                messages.error(request, 'Incorrect passcode. Please try again.')
+        return render(request, 'announcements/admin_unlock.html')
+
     if request.method == 'POST':
         test_email_address = request.POST.get('test_email', '').strip()
         
@@ -283,6 +350,39 @@ RailAnnounce System
         return redirect('announcements:create_announcement')
     
     return redirect('announcements:create_announcement')
+
+
+@require_http_methods(["POST"])
+def mark_announcement_fixed(request, announcement_id):
+    """Mark an announcement as fixed and schedule deletion."""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    announcement = get_object_or_404(Announcement, id=announcement_id)
+    announcement.is_fixed = True
+    announcement.fixed_at = timezone.now()
+    announcement.status = 'completed'
+    announcement.save(update_fields=['is_fixed', 'fixed_at', 'status'])
+    
+    # Schedule deletion after 60 seconds
+    delete_announcement_after_delay.apply_async(args=[announcement.id], countdown=60)
+    
+    return JsonResponse({
+        'success': True,
+        'message': 'Announcement marked as fixed. It will be removed in under a minute.',
+        'fixed_at': announcement.fixed_at.isoformat()
+    })
+
+
+@require_http_methods(["POST"])
+def delete_announcement_now(request, announcement_id):
+    """Immediately delete announcement (admin only)."""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    announcement = get_object_or_404(Announcement, id=announcement_id)
+    announcement.delete()
+    return JsonResponse({'success': True, 'message': 'Announcement deleted'})
 
 
 @csrf_exempt

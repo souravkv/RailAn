@@ -35,6 +35,8 @@ class Announcement(models.Model):
     priority = models.IntegerField(default=5, help_text="Priority level (1-10, higher = more important)")
     is_active = models.BooleanField(default=True, help_text="Whether this announcement is currently active")
     is_urgent = models.BooleanField(default=False, help_text="Whether this is an urgent announcement")
+    is_fixed = models.BooleanField(default=False, help_text="Whether this announcement has been fixed/resolved")
+    fixed_at = models.DateTimeField(null=True, blank=True, help_text="When the announcement was marked as fixed")
     
     # Error tracking
     error_message = models.TextField(blank=True, null=True, help_text="Error message if processing failed")

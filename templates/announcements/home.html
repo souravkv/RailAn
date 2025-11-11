@@ -138,6 +138,11 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
     <div class="hero-buttons">
       <a class="cta-btn" href="{% url 'announcements:create_announcement' %}">Create Announcement</a>
       <a class="cta-btn cta-btn-secondary" href="{% url 'announcements:display_board' %}">View Display Board</a>
+      {% if not request.session.user_name %}
+      <a class="cta-btn" style="background: linear-gradient(135deg,#10b981 0%,#059669 100%);" href="{% url 'announcements:login' %}">
+        <i class="bi bi-person-circle me-1"></i> Login / Sign Up
+      </a>
+      {% endif %}
     </div>
   </div>
 </section>

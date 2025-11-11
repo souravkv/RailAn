@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Passcode - RailAnnounce{% endblock %}
+
+{% block extra_css %}
+<style>
+    .unlock-hero {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    .unlock-card {
+        max-width: 420px;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        text-align: center;
+    }
+    .unlock-card h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+    .unlock-card p {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+    }
+    .passcode-input {
+        font-size: 1.4rem;
+        text-align: center;
+        letter-spacing: 0.4rem;
+        padding: 1rem;
+    }
+    .passcode-input::placeholder {
+        letter-spacing: 0.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="unlock-hero">
+    <div class="unlock-card">
+        <h1>Admin Verification</h1>
+        <p>Enter the 4-digit passcode to proceed.</p>
+        <form method="post">
+            {% csrf_token %}
+            <input
+                type="password"
+                name="admin_passcode"
+                class="form-control passcode-input mb-3"
+                maxlength="4"
+                inputmode="numeric"
+                placeholder="Enter passcode"
+                required
+                autofocus
+            >
+            <button type="submit" class="btn btn-primary w-100">
+                Unlock Admin Access
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}
+

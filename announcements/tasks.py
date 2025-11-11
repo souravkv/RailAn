@@ -213,3 +213,16 @@ def notify_announcement_ready(announcement_id):
     except Exception as e:
         logger.error(f"Error notifying about announcement {announcement_id}: {e}")
 
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def delete_announcement_after_delay(self, announcement_id):
+    """Delete announcement after countdown (used when marked fixed)."""
+    try:
+        announcement = Announcement.objects.filter(id=announcement_id).first()
+        if announcement:
+            logger.info(f"Deleting announcement {announcement_id} after resolved delay")
+            announcement.delete()
+    except Exception as exc:
+        logger.error(f"Error deleting announcement {announcement_id}: {exc}", exc_info=True)
+        raise self.retry(exc=exc)
+
