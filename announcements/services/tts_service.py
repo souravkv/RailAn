@@ -21,7 +21,6 @@ class TTSService:
     def _init_coqui(self):
         """Initialize Coqui TTS"""
         try:
-            # Try to import TTS (may not be installed)
             try:
                 from TTS.api import TTS
             except ImportError:
@@ -30,7 +29,6 @@ class TTSService:
                 return
             
             self.coqui_available = True
-            # Initialize TTS model (lazy loading)
             self.coqui_tts = None
             self._current_model = None
             logger.info("Coqui TTS available")
@@ -44,9 +42,8 @@ class TTSService:
             import pyttsx3
             self.pyttsx3_available = True
             self.pyttsx3_engine = pyttsx3.init()
-            # Configure pyttsx3
-            self.pyttsx3_engine.setProperty('rate', 150)  # Speech rate
-            self.pyttsx3_engine.setProperty('volume', 0.9)  # Volume
+            self.pyttsx3_engine.setProperty('rate', 150)
+            self.pyttsx3_engine.setProperty('volume', 0.9)
             logger.info("pyttsx3 TTS available")
         except Exception as e:
             logger.warning(f"pyttsx3 not available: {e}")
@@ -60,14 +57,13 @@ class TTSService:
         try:
             from TTS.api import TTS
             
-            # Map language codes to Coqui TTS models
             model_map = {
                 'en': 'tts_models/en/ljspeech/tacotron2-DDC',
-                'hi': 'tts_models/hi/cv/vits',  # Common Voice Hindi
-                'ta': 'tts_models/ta/cv/vits',  # Common Voice Tamil
-                'te': 'tts_models/te/cv/vits',  # Common Voice Telugu
-                'bn': 'tts_models/bn/cv/vits',  # Common Voice Bengali
-                'kn': 'tts_models/kn/cv/vits',  # Common Voice Kannada
+                'hi': 'tts_models/hi/cv/vits',
+                'ta': 'tts_models/ta/cv/vits',
+                'te': 'tts_models/te/cv/vits',
+                'bn': 'tts_models/bn/cv/vits',
+                'kn': 'tts_models/kn/cv/vits',
             }
             
             model_name = model_map.get(language_code, 'tts_models/en/ljspeech/tacotron2-DDC')
@@ -83,8 +79,6 @@ class TTSService:
     
     def _language_to_pyttsx3_voice(self, language_code):
         """Map language code to pyttsx3 voice"""
-        # pyttsx3 voice selection varies by system
-        # This is a basic implementation
         voice_map = {
             'en': 'english',
             'hi': 'hindi',
@@ -102,11 +96,9 @@ class TTSService:
             if tts is None:
                 return False
             
-            # Ensure output directory exists
             output_path = Path(output_path)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             
-            # Generate audio
             tts.tts_to_file(text=text, file_path=str(output_path))
             logger.info(f"Generated audio with Coqui TTS: {output_path}")
             return True
@@ -120,19 +112,9 @@ class TTSService:
             if not self.pyttsx3_available:
                 return False
             
-            # Ensure output directory exists
             output_path = Path(output_path)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             
-            # Try to set voice (may not work on all systems)
-            try:
-                voices = self.pyttsx3_engine.getProperty('voices')
-                # Simple voice selection (implementation varies by OS)
-                # For now, use default voice
-            except Exception:
-                pass
-            
-            # Save to file
             self.pyttsx3_engine.save_to_file(text, str(output_path))
             self.pyttsx3_engine.runAndWait()
             
@@ -158,12 +140,10 @@ class TTSService:
             logger.warning("Empty text provided for TTS")
             return False, None
         
-        # Try Coqui TTS first
         if self.coqui_available:
             if self.generate_audio_coqui(text, language_code, output_path):
                 return True, 'coqui'
         
-        # Fallback to pyttsx3
         if self.pyttsx3_available:
             if self.generate_audio_pyttsx3(text, language_code, output_path):
                 return True, 'pyttsx3'

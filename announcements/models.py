@@ -13,35 +13,29 @@ class Announcement(models.Model):
         ('failed', 'Failed'),
     ]
     
-    # Basic information
     title = models.CharField(max_length=200, blank=True, help_text="Announcement title")
     description = models.TextField(blank=True, help_text="Detailed description")
     text = models.TextField(help_text="Original announcement text")
     detected_language = models.CharField(max_length=10, default='en', help_text="Auto-detected language code")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     
-    # Additional information
     handler = models.CharField(max_length=100, blank=True, help_text="Official name handling this announcement")
     announcement_time = models.DateTimeField(null=True, blank=True, help_text="Scheduled time for announcement")
     location = models.CharField(max_length=200, blank=True, help_text="Location of the announcement")
     contact_no = models.CharField(max_length=20, blank=True, help_text="Contact number")
     
-    # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # Priority and display
     priority = models.IntegerField(default=5, help_text="Priority level (1-10, higher = more important)")
     is_active = models.BooleanField(default=True, help_text="Whether this announcement is currently active")
     is_urgent = models.BooleanField(default=False, help_text="Whether this is an urgent announcement")
     is_fixed = models.BooleanField(default=False, help_text="Whether this announcement has been fixed/resolved")
     fixed_at = models.DateTimeField(null=True, blank=True, help_text="When the announcement was marked as fixed")
     
-    # Error tracking
     error_message = models.TextField(blank=True, null=True, help_text="Error message if processing failed")
     
-    # Email notification tracking
     email_sent = models.BooleanField(default=False, help_text="Whether email notifications were sent")
     
     class Meta:
@@ -61,7 +55,6 @@ class Translation(models.Model):
     language_code = models.CharField(max_length=10, help_text="Target language code (hi, ta, te, bn, kn, en)")
     translated_text = models.TextField(help_text="Translated text")
     
-    # Translation metadata
     created_at = models.DateTimeField(default=timezone.now)
     translation_service = models.CharField(max_length=50, default='libretranslate', help_text="Service used for translation")
     
@@ -81,11 +74,9 @@ class AudioFile(models.Model):
     translation = models.ForeignKey(Translation, on_delete=models.CASCADE, related_name='audio_files', null=True, blank=True)
     language_code = models.CharField(max_length=10, help_text="Language of the audio")
     
-    # Audio file
     audio_file = models.FileField(upload_to='audio/%Y/%m/%d/', help_text="Generated audio file")
     duration_seconds = models.FloatField(null=True, blank=True, help_text="Duration of audio in seconds")
     
-    # TTS metadata
     tts_service = models.CharField(max_length=50, default='coqui', help_text="TTS service used (coqui, pyttsx3)")
     created_at = models.DateTimeField(default=timezone.now)
     

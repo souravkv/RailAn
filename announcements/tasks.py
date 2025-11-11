@@ -14,7 +14,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Initialize services
 language_detector = LanguageDetector()
 translator = Translator()
 tts_service = TTSService()
@@ -33,30 +32,23 @@ def process_announcement(self, announcement_id):
         announcement.status = 'processing'
         announcement.save()
         
-        # Step 1: Detect language if not already detected
         if not announcement.detected_language or announcement.detected_language == 'en':
             detected_lang = language_detector.detect_language(announcement.text)
             announcement.detected_language = detected_lang
             announcement.save()
             logger.info(f"Detected language: {detected_lang} for announcement {announcement_id}")
         
-        # Step 2: Translate to all target languages
         target_languages = ['hi', 'ta', 'te', 'bn', 'kn']
-        # Also include English if source is not English
         if announcement.detected_language != 'en':
             target_languages.append('en')
         
-        # Translate to all target languages using Gemini API
-        # If Gemini API is not available, it will return original text
         translations_dict = translator.translate_multiple(
             announcement.text,
             source_lang=announcement.detected_language,
             target_languages=target_languages
         )
         
-        # Step 3: Save translations (even if translation failed, we save the original text)
         for lang_code, translated_text in translations_dict.items():
-            # Only save if we got a translation (not empty)
             if translated_text and translated_text.strip():
                 Translation.objects.update_or_create(
                     announcement=announcement,
@@ -67,7 +59,6 @@ def process_announcement(self, announcement_id):
                     }
                 )
             else:
-                # Fallback: use original text if translation is empty
                 Translation.objects.update_or_create(
                     announcement=announcement,
                     language_code=lang_code,
@@ -77,14 +68,11 @@ def process_announcement(self, announcement_id):
                     }
                 )
         
-        # Step 4: Generate audio for all languages (including original)
-        # Try to generate audio, but don't fail if TTS is not available
         all_languages = list(set([announcement.detected_language] + target_languages))
         audio_generated = False
         
         for lang_code in all_languages:
             try:
-                # Get translation text or original text
                 if lang_code == announcement.detected_language:
                     text_to_speak = announcement.text
                 else:
@@ -97,13 +85,11 @@ def process_announcement(self, announcement_id):
                     else:
                         text_to_speak = announcement.text
                 
-                # Generate audio file path
                 audio_dir = Path(settings.MEDIA_ROOT) / 'audio' / timezone.now().strftime('%Y/%m/%d')
                 audio_dir.mkdir(parents=True, exist_ok=True)
                 audio_filename = f"announcement_{announcement_id}_{lang_code}.wav"
                 audio_path = audio_dir / audio_filename
                 
-                # Generate audio (this may fail if TTS is not available, but we continue)
                 success, service_used = tts_service.generate_audio(
                     text_to_speak,
                     lang_code,
@@ -111,11 +97,7 @@ def process_announcement(self, announcement_id):
                 )
                 
                 if success:
-                    # Get audio duration
                     duration = tts_service.get_audio_duration(str(audio_path))
-                    
-                    # Save audio file record
-                    # Get translation if exists
                     translation = Translation.objects.filter(
                         announcement=announcement,
                         language_code=lang_code
@@ -137,15 +119,11 @@ def process_announcement(self, announcement_id):
                     logger.warning(f"Failed to generate audio for {lang_code} - TTS service may not be available")
             except Exception as e:
                 logger.warning(f"Error generating audio for {lang_code}: {e}")
-                # Continue with other languages even if one fails
         
-        # Step 5: Mark as completed (even if audio generation failed)
-        # We mark as completed if we have translations, even if audio failed
         announcement.status = 'completed'
         announcement.save()
         logger.info(f"Marked announcement {announcement_id} as completed")
         
-        # Step 6: Notify via WebSocket
         notify_announcement_ready.delay(announcement_id)
         
         logger.info(f"Successfully processed announcement {announcement_id}")
@@ -159,7 +137,6 @@ def process_announcement(self, announcement_id):
         announcement.status = 'failed'
         announcement.error_message = str(e)
         announcement.save()
-        # Retry the task
         raise self.retry(exc=e, countdown=60)
 
 

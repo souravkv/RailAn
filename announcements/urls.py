@@ -19,8 +19,6 @@ urlpatterns = [
     path('display/<int:board_id>/', views.display_board, name='display_board'),
     path('announcement/<int:announcement_id>/mark-fixed/', views.mark_announcement_fixed, name='mark_fixed'),
     path('announcement/<int:announcement_id>/delete/', views.delete_announcement_now, name='delete_announcement'),
-    
-    # API endpoints
     path('api/announcement/<int:announcement_id>/status/', views.api_announcement_status, name='api_announcement_status'),
     path('api/announcement/create/', views.api_create_announcement, name='api_create_announcement'),
 ]
