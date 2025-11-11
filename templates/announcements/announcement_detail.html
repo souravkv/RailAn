@@ -7,10 +7,22 @@
     <div class="col-md-10 mx-auto">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Announcement #{{ announcement.id }}</h4>
-                <span class="badge bg-{% if announcement.status == 'completed' %}success{% elif announcement.status == 'processing' %}warning{% elif announcement.status == 'failed' %}danger{% else %}secondary{% endif %} status-badge">
-                    {{ announcement.get_status_display }}
-                </span>
+                <div>
+                    <h4 class="mb-0">Announcement #{{ announcement.id }}</h4>
+                    {% if announcement.title %}
+                        <small class="text-muted" style="color: rgba(255, 255, 255, 0.6) !important;">{{ announcement.title }}</small>
+                    {% endif %}
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-{% if announcement.status == 'completed' %}success{% elif announcement.status == 'processing' %}warning{% elif announcement.status == 'failed' %}danger{% else %}secondary{% endif %} status-badge">
+                        {{ announcement.get_status_display }}
+                    </span>
+                    {% if announcement.email_sent %}
+                        <span class="badge bg-success" title="Email notification was sent">
+                            📧 Email Sent
+                        </span>
+                    {% endif %}
+                </div>
             </div>
             <div class="card-body">
                 <div class="mb-3">

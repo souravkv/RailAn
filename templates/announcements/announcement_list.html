@@ -2,6 +2,156 @@
 
 {% block title %}All Announcements - RailAnnounce{% endblock %}
 
+{% block extra_css %}
+<style>
+    .announcement-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .announcement-card.priority-high {
+        border-left-color: #ef4444;
+    }
+    
+    .announcement-card.priority-medium {
+        border-left-color: #f59e0b;
+    }
+    
+    .announcement-card.priority-low {
+        border-left-color: #60a5fa;
+    }
+    
+    .announcement-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .meta-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .meta-box svg {
+        width: 20px;
+        height: 20px;
+        stroke: #60a5fa;
+        flex-shrink: 0;
+    }
+    
+    .meta-box strong {
+        color: rgba(255, 255, 255, 0.9);
+        margin-right: 5px;
+    }
+    
+    .meta-box span {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .language-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .language-modal.active {
+        display: flex;
+    }
+    
+    .language-modal-content {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .language-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .language-tab {
+        padding: 10px 20px;
+        background: rgba(96, 165, 250, 0.1);
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        border-radius: 8px;
+        color: #60a5fa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .language-tab:hover,
+    .language-tab.active {
+        background: rgba(96, 165, 250, 0.2);
+        border-color: #60a5fa;
+        transform: translateY(-2px);
+    }
+    
+    .translation-content {
+        display: none;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+    
+    .translation-content.active {
+        display: block;
+    }
+    
+    .close-modal {
+        float: right;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    
+    .close-modal:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-12">
@@ -17,27 +167,121 @@
         
         <div class="row">
             {% for announcement in announcements %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
+                <div class="col-12 mb-4">
+                    <div class="card announcement-card priority-{% if announcement.priority >= 8 %}high{% elif announcement.priority >= 5 %}medium{% else %}low{% endif %}">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">#{{ announcement.id }}</h6>
-                            <span class="badge bg-{% if announcement.status == 'completed' %}success{% elif announcement.status == 'processing' %}warning{% elif announcement.status == 'failed' %}danger{% else %}secondary{% endif %} status-badge">
-                                {{ announcement.get_status_display }}
-                            </span>
+                            <div>
+                                <h4 class="mb-0">
+                                    {% if announcement.title %}
+                                        {{ announcement.title }}
+                                    {% else %}
+                                        Announcement #{{ announcement.id }}
+                                    {% endif %}
+                                </h4>
+                                {% if announcement.handler %}
+                                    <small class="text-muted" style="color: rgba(255, 255, 255, 0.6) !important;">
+                                        Handled by: <strong>{{ announcement.handler }}</strong>
+                                    </small>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-{% if announcement.status == 'completed' %}success{% elif announcement.status == 'processing' %}warning{% elif announcement.status == 'failed' %}danger{% else %}secondary{% endif %} status-badge">
+                                    {{ announcement.get_status_display }}
+                                </span>
+                                <span class="badge" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                                    Priority {{ announcement.priority }}
+                                </span>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <p class="card-text" style="color: rgba(255, 255, 255, 0.9); line-height: 1.6;">{{ announcement.text|truncatewords:20 }}</p>
-                            <div class="d-flex flex-wrap gap-2 align-items-center mb-3" style="font-size: 0.875rem;">
-                                <span class="text-muted">Language:</span>
-                                <span class="badge bg-info language-badge">{{ announcement.detected_language|upper }}</span>
-                                <span class="text-muted">|</span>
-                                <span class="text-muted">Priority: <strong>{{ announcement.priority }}</strong></span>
-                                <span class="text-muted">|</span>
-                                <span class="text-muted">{{ announcement.created_at|date:"M d, Y H:i" }}</span>
+                            {% if announcement.description %}
+                                <div class="mb-3" style="color: rgba(255, 255, 255, 0.7); font-style: italic;">
+                                    {{ announcement.description }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <p class="card-text" style="color: rgba(255, 255, 255, 0.9); line-height: 1.8; font-size: 1.05rem;">
+                                    {{ announcement.text }}
+                                </p>
                             </div>
-                            <div class="mt-2">
+                            
+                            <div class="meta-grid">
+                                {% if announcement.location %}
+                                    <div class="meta-box">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                        <div>
+                                            <strong>Location:</strong>
+                                            <span>{{ announcement.location }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if announcement.announcement_time %}
+                                    <div class="meta-box">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <div>
+                                            <strong>Time:</strong>
+                                            <span>{{ announcement.announcement_time|date:"M d, Y H:i" }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if announcement.contact_no %}
+                                    <div class="meta-box">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                        </svg>
+                                        <div>
+                                            <strong>Contact:</strong>
+                                            <span>{{ announcement.contact_no }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="meta-box">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                        <path d="M2 17l10 5 10-5"></path>
+                                        <path d="M2 12l10 5 10-5"></path>
+                                    </svg>
+                                    <div>
+                                        <strong>Language:</strong>
+                                        <span>{{ announcement.detected_language|upper }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="meta-box">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <div>
+                                        <strong>Created:</strong>
+                                        <span>{{ announcement.created_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-3">
+                                {% if announcement.translations.all %}
+                                    <button class="btn btn-sm btn-primary" onclick="showTranslations({{ announcement.id }})">
+                                        <svg style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                            <path d="M2 17l10 5 10-5"></path>
+                                            <path d="M2 12l10 5 10-5"></path>
+                                        </svg>
+                                        View Translations ({{ announcement.translations.count }})
+                                    </button>
+                                {% endif %}
                                 <a href="{% url 'announcements:announcement_detail' announcement.id %}" class="btn btn-sm btn-primary">
-                                    View Details
+                                    View Full Details
                                 </a>
                             </div>
                         </div>
@@ -54,5 +298,90 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
+<!-- Language Translations Modal -->
+<div class="language-modal" id="language-modal">
+    <div class="language-modal-content">
+        <button class="close-modal" onclick="closeTranslations()">&times;</button>
+        <h3 class="mb-4">Translations</h3>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<script>
+    const translationsData = {
+        {% for announcement in announcements %}
+            {% if announcement.translations.all %}
+                {{ announcement.id }}: {
+                    original: {
+                        text: {{ announcement.text|escapejs }},
+                        lang: '{{ announcement.detected_language|upper }}'
+                    },
+                    translations: {
+                        {% for translation in announcement.translations.all %}
+                            '{{ translation.language_code }}': {
+                                text: {{ translation.translated_text|escapejs }},
+                                lang: '{{ translation.language_code|upper }}'
+                            }{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    }
+                }{% if not forloop.last %},{% endif %}
+            {% endif %}
+        {% endfor %}
+    };
+    
+    function showTranslations(announcementId) {
+        const data = translationsData[announcementId];
+        if (!data) return;
+        
+        const modal = document.getElementById('language-modal');
+        const content = document.getElementById('modal-content');
+        
+        let html = '<div class="language-tabs">';
+        html += `<button class="language-tab active" onclick="switchLanguage('original', ${announcementId})">Original (${data.original.lang})</button>`;
+        
+        for (const [code, trans] of Object.entries(data.translations)) {
+            html += `<button class="language-tab" onclick="switchLanguage('${code}', ${announcementId})">${trans.lang}</button>`;
+        }
+        html += '</div>';
+        
+        html += `<div class="translation-content active" id="trans-original-${announcementId}">${data.original.text}</div>`;
+        for (const [code, trans] of Object.entries(data.translations)) {
+            html += `<div class="translation-content" id="trans-${code}-${announcementId}">${trans.text}</div>`;
+        }
+        
+        content.innerHTML = html;
+        modal.classList.add('active');
+    }
+    
+    function switchLanguage(lang, announcementId) {
+        // Update active tab
+        const modal = document.getElementById('language-modal');
+        const clickedTab = event.target;
+        modal.querySelectorAll('.language-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        clickedTab.classList.add('active');
+        
+        // Show/hide content
+        modal.querySelectorAll('.translation-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        const contentElement = document.getElementById(`trans-${lang}-${announcementId}`);
+        if (contentElement) {
+            contentElement.classList.add('active');
+        }
+    }
+    
+    function closeTranslations() {
+        document.getElementById('language-modal').classList.remove('active');
+    }
+    
+    // Close modal on outside click
+    document.getElementById('language-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeTranslations();
+        }
+    });
+</script>
+{% endblock %}

@@ -9,6 +9,7 @@ app_name = 'announcements'
 urlpatterns = [
     path('', views.home, name='home'),
     path('create/', views.create_announcement, name='create_announcement'),
+    path('test-email/', views.test_email, name='test_email'),
     path('list/', views.announcement_list, name='announcement_list'),
     path('announcement/<int:announcement_id>/', views.announcement_detail, name='announcement_detail'),
     path('display/', views.display_board, name='display_board'),

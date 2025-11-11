@@ -19,6 +19,60 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     
     <style>
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .loading-logo svg {
+            width: 100%;
+            height: 100%;
+            stroke: #60a5fa;
+            fill: none;
+        }
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(96, 165, 250, 0.2);
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         /* Use Space Grotesk sitewide */
         body {
             background-color: #0a0a0a;
@@ -226,6 +280,19 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="loading-text">RailAnnounce</div>
+        <div class="loading-spinner"></div>
+    </div>
+    
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-centered">
         <div class="container-fluid">
@@ -246,10 +313,10 @@
                         <a class="nav-link" href="{% url 'announcements:home' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'announcements:create_announcement' %}">Create Announcement</a>
+                        <a class="nav-link" href="{% url 'announcements:create_announcement' %}">Create </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'announcements:announcement_list' %}">All Announcements</a>
+                        <a class="nav-link" href="{% url 'announcements:announcement_list' %}">Announcements</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'announcements:display_board' %}">Display Board</a>
@@ -282,14 +349,25 @@
     <!-- Footer -->
     <footer class="site-footer text-center py-3 mt-5">
         <div class="container">
-            <p class="mb-0">
-                RailAnnounce - FREE Offline Multilingual Railway Announcement System
-            </p>
+           
         </div>
     </footer>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Loading Screen Script -->
+    <script>
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            setTimeout(function() {
+                loadingScreen.classList.add('hidden');
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 800);
+        });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

@@ -14,9 +14,17 @@ class Announcement(models.Model):
     ]
     
     # Basic information
+    title = models.CharField(max_length=200, blank=True, help_text="Announcement title")
+    description = models.TextField(blank=True, help_text="Detailed description")
     text = models.TextField(help_text="Original announcement text")
     detected_language = models.CharField(max_length=10, default='en', help_text="Auto-detected language code")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Additional information
+    handler = models.CharField(max_length=100, blank=True, help_text="Official name handling this announcement")
+    announcement_time = models.DateTimeField(null=True, blank=True, help_text="Scheduled time for announcement")
+    location = models.CharField(max_length=200, blank=True, help_text="Location of the announcement")
+    contact_no = models.CharField(max_length=20, blank=True, help_text="Contact number")
     
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

@@ -18,8 +18,42 @@
                 <form method="post" id="announcement-form">
                     {% csrf_token %}
                     
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="title" 
+                                name="title" 
+                                placeholder="Enter announcement title"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="handler" class="form-label">Handler (Official Name)</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="handler" 
+                                name="handler" 
+                                placeholder="Name of official handling this"
+                            >
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
-                        <label for="text" class="form-label">Announcement Text</label>
+                        <label for="description" class="form-label">Description</label>
+                        <textarea 
+                            class="form-control" 
+                            id="description" 
+                            name="description" 
+                            rows="3" 
+                            placeholder="Detailed description (optional)"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Announcement Text <span class="text-danger">*</span></label>
                         <textarea 
                             class="form-control" 
                             id="text" 
@@ -30,6 +64,38 @@
                         ></textarea>
                         <div class="form-text">
                             The system will automatically detect the language and translate to multiple languages.
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="announcement_time" class="form-label">Announcement Time</label>
+                            <input 
+                                type="datetime-local" 
+                                class="form-control" 
+                                id="announcement_time" 
+                                name="announcement_time"
+                            >
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="location" 
+                                name="location" 
+                                placeholder="e.g., Platform 1, Station A"
+                            >
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="contact_no" class="form-label">Contact Number</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="contact_no" 
+                                name="contact_no" 
+                                placeholder="e.g., +91 1234567890"
+                            >
                         </div>
                     </div>
                     
@@ -50,6 +116,29 @@
                         </div>
                     </div>
                     
+                    <div class="mb-3">
+                        <label for="email_recipients" class="form-label">Send Email Notification To (Optional)</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="email_recipients" 
+                            name="email_recipients" 
+                            placeholder="Enter email addresses separated by commas (e.g., user1@example.com, user2@example.com)"
+                        >
+                        <div class="form-text">
+                            Enter email addresses to send notification when announcement is created. Separate multiple emails with commas.
+                        </div>
+                        {% if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD %}
+                            <div class="alert alert-warning mt-2" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24;">
+                                <strong>⚠ Email not configured:</strong> Set EMAIL_HOST_USER and EMAIL_HOST_PASSWORD environment variables to enable email sending.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success mt-2" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80;">
+                                <strong>✓ Email configured:</strong> Ready to send emails from {{ EMAIL_HOST_USER }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -58,6 +147,40 @@
                             </svg>
                             Create and Process Announcement
                         </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Test Email Configuration</h5>
+            </div>
+            <div class="card-body">
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">
+                    Test if your email configuration is working by sending a test email to yourself.
+                </p>
+                <form method="post" action="{% url 'announcements:test_email' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                name="test_email" 
+                                placeholder="Enter your email address to test"
+                                required
+                            >
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <svg style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                Send Test Email
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
