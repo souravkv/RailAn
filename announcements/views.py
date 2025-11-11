@@ -65,6 +65,11 @@ def logout_view(request):
     return redirect('announcements:home')
 
 
+def workflow_view(request):
+    """Show site workflow/architecture"""
+    return render(request, 'announcements/workflow.html')
+
+
 def create_announcement(request):
     """Create a new announcement"""
     if not request.session.get('is_admin'):

@@ -56,7 +56,7 @@ body { line-height: 1.6; }
 .hero-subtitle { font-size:clamp(1rem,3vw,1.3rem); font-weight:400; opacity:0; max-width:700px; margin:0 auto 1.5rem; color: rgba(255,255,255,0.9); line-height:1.6; }
 .hero-desc { font-size:1.05rem; color: rgba(255,255,255,0.85); opacity:0; margin-bottom:2rem; max-width:650px; margin-left:auto; margin-right:auto; line-height:1.7; }
 .hero-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
-.cta-btn { display:inline-block; padding:1rem 2rem; background: linear-gradient(135deg,#1e40af 0%,#0369a1 100%); color:white; text-decoration:none; border-radius:0.5rem; font-weight:600; font-size:1rem; border:none; cursor:pointer; transition:transform .3s ease, box-shadow .3s ease; opacity:0; }
+.cta-btn { display:inline-block; padding:1rem 2rem; background: linear-gradient(135deg,#1e40af 0%,#0369a1 100%); color:white; text-decoration:none; border-radius:0.5rem; font-weight:600; font-size:1rem; border:none; cursor:pointer; transition:transform .3s ease, box-shadow .3s ease; }
 .cta-btn:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(30,64,175,0.4); }
 .cta-btn-secondary { background:white; color:#1e40af; border:1.5px solid #1e40af; }
 .cta-btn-secondary:hover { background:#f8f9fa; box-shadow:0 12px 30px rgba(30,64,175,0.15); }
@@ -79,10 +79,10 @@ body { line-height: 1.6; }
 }
 .features-container { max-width:1200px; margin:0 auto; }
 .features-header { text-align:center; margin-bottom:4rem; }
-.features-header h2 { font-size:clamp(2rem,6vw,3.5rem); font-weight:800; margin-bottom:1rem; opacity:0; color:#ffffff; }
-.features-header p { font-size:1.1rem; color:rgba(255,255,255,0.85); opacity:0; max-width:500px; margin:0 auto; }
+.features-header h2 { font-size:clamp(3rem,7vw,4.75rem); font-weight:800; margin-bottom:1.5rem; opacity:0; color:#ffffff; }
+.features-header p { font-size:1.2rem; color:rgba(255,255,255,0.85); opacity:0; max-width:600px; margin:0 auto; letter-spacing:0.01em; }
 .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2.5rem; margin:0 auto; }
-.feature-card { background:linear-gradient(135deg,#0b1220 0%,#0f1725 100%); padding:2.5rem; border-radius:1rem; border:1px solid rgba(255,255,255,0.04); opacity:0; transition:all .3s ease; text-align:center; position:relative; overflow:hidden; cursor:pointer; }
+.feature-card { background:linear-gradient(135deg,#0b1220 0%,#0f1725 100%); padding:3.25rem; border-radius:1.2rem; border:1px solid rgba(255,255,255,0.05); opacity:0; transition:all .3s ease; text-align:left; position:relative; overflow:hidden; cursor:pointer; }
 .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#7dd3fc 0%,#60a5fa 100%); transform:scaleX(0); transform-origin:left; transition:transform .3s ease; }
 .feature-card:hover { transform:translateY(-8px); border-color:rgba(125,211,252,0.12); box-shadow:0 20px 40px rgba(0,0,0,0.5); }
 .feature-card:hover::before { transform:scaleX(1); }
@@ -107,9 +107,19 @@ body { line-height: 1.6; }
   color: #3b82f6;
   transform: scale(1.15) translateY(-4px);
 }
-.feature-card h3 { font-size:1.5rem; margin-bottom:0.75rem; color:#ffffff; font-weight:700; }
-.feature-card p { color:rgba(255,255,255,0.8); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem; }
-.feature-card .cta-btn { opacity:1; display:inline-block; padding:0.75rem 1.5rem; font-size:0.9rem; }
+.feature-card h3 { font-size:2.1rem; margin-bottom:1.25rem; color:#ffffff; font-weight:700; line-height:1.2; letter-spacing:-0.01em; }
+.feature-card p { color:rgba(255,255,255,0.82); font-size:1.05rem; line-height:1.75; margin-bottom:1.75rem; max-width: 520px; }
+.feature-card .cta-btn { opacity:1; display:inline-block; padding:0.85rem 1.75rem; font-size:0.95rem; }
+.cta-secondary-outline {
+  background: transparent;
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.6);
+}
+.cta-secondary-outline:hover {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.9);
+  color: #93c5fd;
+}
 
 footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-size:0.9rem; }
 
@@ -117,12 +127,17 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
   .hero { padding:1.5rem; padding-top:6rem; }
   .features { padding:3rem 1.5rem; }
   .features-grid { gap:1.5rem; grid-template-columns: 1fr; }
-  .feature-card { padding:2rem; }
+  .feature-card { padding:2.5rem; text-align:center; }
+  .feature-card h3 { font-size:2rem; }
+  .feature-card p { font-size:1.05rem; }
   .hero-buttons { flex-direction:column; gap:0.75rem; }
   .cta-btn { width:100%; }
   .navbar-centered { 
     max-width: calc(100% - 2rem);
     padding: 0.5rem 1rem;
+  }
+  .cta-secondary-outline {
+    width: 100%;
   }
 }
 </style>
@@ -137,7 +152,7 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
     <p class="hero-desc">RailAnnounce automatically translates and announces railway information in Hindi, Tamil, Telugu, Bengali, and Kannada with live display integration.</p>
     <div class="hero-buttons">
       <a class="cta-btn" href="{% url 'announcements:create_announcement' %}">Create Announcement</a>
-      <a class="cta-btn cta-btn-secondary" href="{% url 'announcements:display_board' %}">View Display Board</a>
+      <a class="cta-btn cta-btn-secondary cta-secondary-outline" href="{% url 'announcements:display_board' %}">View Display Board</a>
       {% if not request.session.user_name %}
       <a class="cta-btn" style="background: linear-gradient(135deg,#10b981 0%,#059669 100%);" href="{% url 'announcements:login' %}">
         <i class="bi bi-person-circle me-1"></i> Login / Sign Up
@@ -164,7 +179,7 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
                         <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <h3>Create Announcement</h3>
+                <h3>Create </h3>
                 <p>Staff enters information once. Our system auto-detects the language and generates translations with automatic TTS audio files.</p>
                 <a class="cta-btn" href="{% url 'announcements:create_announcement' %}">Start Creating</a>
             </article>
@@ -176,7 +191,7 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
                         <path d="M12 17v4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <h3>Live Display Board</h3>
+                <h3>Live Display </h3>
                 <p>Real-time WebSocket integration displays announcements instantly on platforms. Multi-language support for all passengers.</p>
                 <a class="cta-btn" href="{% url 'announcements:display_board' %}">View Board</a>
             </article>
@@ -186,7 +201,7 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
                         <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <h3>All Announcements</h3>
+                <h3>Announcements</h3>
                 <p>Browse your complete announcement history, track translations, manage archives, and view analytics all in one dashboard.</p>
                 <a class="cta-btn" href="{% url 'announcements:announcement_list' %}">View All</a>
             </article>
@@ -195,6 +210,20 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
 </section>
 <!-- V0DEV: FEATURES END -->
 
+<section class="workflow-cta" style="padding: 6rem 2rem 7rem;">
+    <div class="features-container" style="text-align:center;">
+        <h2 style="font-size: clamp(3rem, 7vw, 5rem); font-weight: 700; margin-bottom: 1.5rem;">
+            Explore The Full RailAnnounce Pipeline
+        </h2>
+        <p style="color: rgba(255,255,255,0.78); max-width: 700px; margin: 0 auto 2.5rem; font-size: 1.15rem; line-height: 1.8;">
+            Step through the production-grade workflow that powers multi-lingual announcements, synchronized audio, live dashboards, and automated resolution.
+        </p>
+        <a class="cta-btn" href="{% url 'announcements:workflow' %}" style="background: linear-gradient(135deg,#1d4ed8 0%,#1e40af 100%); padding: 1.2rem 2.6rem; font-size: 1.05rem;">
+            Show Workflow
+        </a>
+    </div>
+</section>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -202,28 +231,78 @@ footer { background:#0f172a; color:white; padding:2rem; text-align:center; font-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script>
-  gsap.registerPlugin(ScrollTrigger);
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!prefersReducedMotion) {
-    gsap.to('.hero-title', { opacity:1, y:0, duration:0.8, delay:0.2, ease:'power3.out' });
-    gsap.to('.hero-subtitle', { opacity:1, y:0, duration:0.8, delay:0.4, ease:'power3.out' });
-    gsap.to('.hero-desc', { opacity:1, y:0, duration:0.8, delay:0.6, ease:'power3.out' });
-    gsap.to('.cta-btn', { opacity:1, y:0, duration:0.8, delay:0.8, stagger:0.1, ease:'power3.out' });
+  window.addEventListener('load', function() {
+    gsap.registerPlugin(ScrollTrigger);
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    gsap.to('.features-header h2, .features-header p', {
-      opacity:1, y:0, duration:0.7, stagger:0.15,
-      scrollTrigger: { trigger:'.features', start:'top 75%', toggleActions:'play none none none' },
-      ease:'power2.out'
-    });
+    if (!prefersReducedMotion) {
+      gsap.set('.hero-content', { transformPerspective: 1200, transformStyle: 'preserve-3d' });
+      gsap.set('.hero-title, .hero-subtitle, .hero-desc, .hero-buttons .cta-btn', { opacity: 1 });
 
-    gsap.to('.feature-card', {
-      opacity:1, y:0, rotateY:0, duration:0.7, stagger:0.2,
-      scrollTrigger: { trigger:'.features-grid', start:'top 65%', toggleActions:'play none none none' },
-      ease:'power2.out'
-    });
-  } else {
-    gsap.set('.hero-title, .hero-subtitle, .hero-desc, .cta-btn, .features-header h2, .features-header p, .feature-card', { opacity:1, y:0, rotateY:0 });
-  }
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.25 }});
+      heroTimeline
+        .from('.hero-title', { y: -120, rotationX: 65, opacity: 0, transformOrigin: 'top center', stagger: 0.05 })
+        .from('.hero-subtitle', { y: -100, rotationX: 55, opacity: 0 }, '-=0.8')
+        .from('.hero-desc', { y: -90, rotationX: 45, opacity: 0 }, '-=0.8')
+        .from('.hero-buttons .cta-btn', { y: 90, opacity: 0, rotationX: -40, stagger: 0.12 }, '-=0.6');
+
+      gsap.to('.hero-content', {
+        y: 14,
+        duration: 3.5,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+
+      gsap.timeline({
+        scrollTrigger: { trigger:'.features-header', start:'top 80%' }
+      })
+      .to('.features-header h2', { opacity:1, y:0, scale:1, duration:1.1, ease:'power3.out' })
+      .to('.features-header p', { opacity:1, y:0, duration:0.9, ease:'power3.out' }, '-=0.6');
+
+      gsap.utils.toArray('.feature-card').forEach((card) => {
+        gsap.to(card, {
+          opacity:1,
+          y:0,
+          rotateX:0,
+          rotateY:0,
+          duration:1,
+          ease:'power3.out',
+          scrollTrigger:{
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+        const heading = card.querySelector('h3');
+        if (heading) {
+          gsap.from(heading, {
+            opacity:0,
+            x: -40,
+            duration:0.9,
+            ease:'power4.out',
+            scrollTrigger:{
+              trigger: card,
+              start: 'top 85%'
+            }
+          });
+        }
+      });
+
+      gsap.to('.workflow-cta .features-container', {
+        opacity:1,
+        y:0,
+        duration:1.1,
+        ease:'power3.out',
+        scrollTrigger:{
+          trigger:'.workflow-cta',
+          start:'top 80%'
+        }
+      });
+    } else {
+      gsap.set('.hero-title, .hero-subtitle, .hero-desc, .cta-btn, .features-header h2, .features-header p, .feature-card', { opacity:1, y:0, rotateY:0 });
+    }
+  });
 </script>
 {% endblock %}
 

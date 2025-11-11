@@ -25,6 +25,18 @@
                 </div>
             </div>
             <div class="card-body">
+                {% if request.session.is_admin %}
+                <div class="d-flex gap-2 mb-3">
+                    {% if not announcement.is_fixed %}
+                    <button class="btn btn-success" id="btn-mark-fixed" data-action="{% url 'announcements:mark_fixed' announcement_id=announcement.id %}">
+                        <i class="bi bi-check2-circle"></i> Mark Fixed
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-outline-danger" id="btn-delete" data-action="{% url 'announcements:delete_announcement' announcement_id=announcement.id %}">
+                        <i class="bi bi-trash"></i> Delete Announcement
+                    </button>
+                </div>
+                {% endif %}
                 <div class="mb-3">
                     <h5>Original Text</h5>
                     <p class="lead">{{ announcement.text }}</p>
@@ -111,5 +123,39 @@
     }, 5000);
 </script>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+        function post(url) {
+            return fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            }).then(res => res.json());
+        }
+        const markBtn = document.getElementById('btn-mark-fixed');
+        if (markBtn) {
+            markBtn.addEventListener('click', () => {
+                const url = markBtn.dataset.action;
+                post(url).then(() => window.location.reload());
+            });
+        }
+        const delBtn = document.getElementById('btn-delete');
+        if (delBtn) {
+            delBtn.addEventListener('click', () => {
+                if (confirm('Delete this announcement permanently?')) {
+                    const url = delBtn.dataset.action;
+                    post(url).then(() => window.location.href = "{% url 'announcements:announcement_list' %}");
+                }
+            });
+        }
+    })();
+</script>
 {% endblock %}
 
